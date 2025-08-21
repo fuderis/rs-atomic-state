@@ -2,10 +2,10 @@ pub mod flag;  pub use flag::AtomicFlag;
 
 use crate::prelude::*;
 
-/// A static data alias
+/// A static flag alias
 pub type Flag = Lazy<AtomicFlag>;
 
-/// Initializes a static data
+/// Initializes a static flag
 #[macro_export]
 macro_rules! flag {
     ($v:expr) => {{
