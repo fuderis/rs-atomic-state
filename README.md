@@ -8,8 +8,8 @@
 
 # Atomic State
 
-It's a Rust library designed to simplify working with static asynchronous data that can be accessed safely and concurrently from any part of your program. It provides convenient abstractions for creating atomic flags and state objects with asynchronous setters, getters, and locking mechanisms.
-<br>
+It's a Rust library designed to simplify working with static asynchronous data that can be accessed safely and concurrently from any part of your program. It provides convenient abstractions for creating atomic flags and state objects with asynchronous setters, getters, and locking mechanisms.<br><br>
+
 This library bridges the gap between synchronous static variables and asynchronous runtime environments, enabling seamless and safe manipulation of shared global state in asynchronous applications, such as those using Tokio or other async runtimes.
 
 
@@ -78,6 +78,6 @@ async fn main() {
 ## Feedback:
 
 > This library distributed under the *MIT* license.
-<br>
+
 You can contact me via GitHub or send a message to my *Telegram* [@fuderis](https://t.me/fuderis).
 This library is actively evolving, and your suggestions and feedback are always welcome!
