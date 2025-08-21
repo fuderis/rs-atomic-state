@@ -77,7 +77,7 @@ async fn main() {
 
 ## Feedback:
 
-> This library distributed under the *MIT* license.
+> This library distributed under the *[MIT](https://github.com/fuderis/rs-atomic-state/blob/main/LICENSE.md)* license.
 
 You can contact me via GitHub or send a message to my *Telegram* [@fuderis](https://t.me/fuderis).
 This library is actively evolving, and your suggestions and feedback are always welcome!
