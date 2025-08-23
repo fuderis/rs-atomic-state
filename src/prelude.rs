@@ -2,6 +2,9 @@
 
 pub(crate) use std::sync::{ Arc, RwLock, atomic::{ AtomicBool, Ordering, } };
 pub(crate) use tokio::sync::{ Mutex, MutexGuard, OwnedMutexGuard, Notify };
-pub(crate) use once_cell::{ self, sync::Lazy };
+pub(crate) use once_cell::{ self };
 
-pub use crate::{ Flag, flag, State, state };
+pub use crate::{
+    Lazy, AtomFlag, AtomState,
+    lazy, lazy_flag, lazy_state,
+};

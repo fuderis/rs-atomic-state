@@ -1,6 +1,6 @@
-extern crate atomic_state;  use atomic_state::{ Flag, flag };
+use atomic_state::prelude::*;
 
-static IS_ACTIVE: Flag = flag!(false);
+static IS_ACTIVE: Lazy<AtomFlag> = lazy_flag!(false);
 
 #[tokio::main]
 async fn main() {

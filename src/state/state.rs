@@ -1,66 +1,49 @@
-use crate::prelude::*;
-use super::*;
+use std::sync::{ Arc, };
+use tokio::sync::{ RwLock, RwLockReadGuard, RwLockWriteGuard };
 
-/// The static data wrapper
+/// The atomic state
 #[derive(Clone)]
-pub struct AtomicState<T: Clone> {
-    pub(super) inner: Arc<Mutex<T>>,
-    pub(super) fast: Arc<RwLock<T>>,
+pub struct AtomState<T> {
+    inner: Arc<RwLock<T>>,
 }
 
-impl<T: Clone + 'static> AtomicState<T> {
-    /// Creates a new static data
+impl<T> AtomState<T> {
+    /// Creates a new state
     pub fn new(value: T) -> Self {
         Self {
-            inner: Arc::new(Mutex::new(value.clone())),
-            fast: Arc::new(RwLock::new(value)),
-        }
-    }
-    
-    /// Lock a data mutex
-    pub async fn lock(&self) -> AtomicStateGuard<T> {
-        AtomicStateGuard {
-            guard: self.inner.clone().lock_owned().await,
-            fast: self.fast.clone(),
+            inner: Arc::new(RwLock::new(value)),
         }
     }
 
-    /// Get a last data
-    pub fn get(&self) -> T {
-        self.fast.read().expect(ERR_MSG).clone()
+    /// Returns a state locked guard
+    pub async fn lock(&self) -> RwLockWriteGuard<'_, T> {
+        self.inner.write().await
     }
 
-    /// Set a new data
+    /// Returns a state locked guard
+    pub fn block_lock(&self) -> RwLockWriteGuard<'_, T> {
+        self.inner.blocking_write()
+    }
+
+    /// Returns a state value
+    pub async fn get(&self) -> RwLockReadGuard<'_, T> {
+        self.inner.read().await
+    }
+
+    /// Returns a state value (with thread blocking)
+    pub fn block_get(&self) -> RwLockReadGuard<'_, T> {
+        self.inner.blocking_read()
+    }
+
+    /// Sets a new value to state
     pub async fn set(&self, value: T) {
-        *self.inner.lock().await = value.clone();
-        self.set_fast(value);
+        let mut guard = self.inner.write().await;
+        *guard = value;
     }
 
-    /// Set fast value
-    fn set_fast(&self, value: T) {
-        *self.fast.write().expect(ERR_MSG) = value;
-    }
-
-    /// Read/write data directly
-    pub async fn map(&self, f: impl FnOnce(&mut T)) {
-        f(&mut *self.inner.lock().await);
-        self.update().await;
-    }
-
-    /// Update fast value
-    pub async fn update(&self) {
-        self.set_fast(self.inner.lock().await.clone());
-    }
-}
-
-impl<T: Clone + ::std::fmt::Debug + 'static> ::std::fmt::Debug for AtomicState<T> {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        write!(f, "{:?}", self.get())
-    }
-}
-
-impl<T: Clone + ::std::fmt::Display + 'static> ::std::fmt::Display for AtomicState<T> {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-        write!(f, "{}", self.get())
+    /// Sets a new value to state (with thread blocking)
+    pub fn block_set(&self, value: T) {
+        let mut guard = self.inner.blocking_write();
+        *guard = value;
     }
 }

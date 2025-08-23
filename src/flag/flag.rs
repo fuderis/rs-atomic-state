@@ -1,16 +1,16 @@
 use crate::prelude::*;
 
-/// The static boolean flag
+/// The atomic flag
 #[derive(Clone)]
-pub struct AtomicFlag {
+pub struct AtomFlag {
     state: Arc<AtomicBool>,
     notify: Arc<Notify>,
 }
 
-impl AtomicFlag {
-    /// Creates a new static flag
+impl AtomFlag {
+    /// Creates a new flag
     pub fn new(initial: bool) -> Self {
-        AtomicFlag {
+        AtomFlag {
             state: Arc::new(AtomicBool::new(initial)),
             notify: Arc::new(Notify::new()),
         }
@@ -55,39 +55,39 @@ impl AtomicFlag {
     }
 }
 
-impl ::std::fmt::Debug for AtomicFlag {
+impl ::std::fmt::Debug for AtomFlag {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(f, "{:?}", &self.get())
     }
 }
 
-impl ::std::fmt::Display for AtomicFlag {
+impl ::std::fmt::Display for AtomFlag {
     fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(f, "{}", &self.get())
     }
 }
 
-impl ::std::cmp::Eq for AtomicFlag {}
+impl ::std::cmp::Eq for AtomFlag {}
 
-impl ::std::cmp::PartialEq for AtomicFlag {
+impl ::std::cmp::PartialEq for AtomFlag {
     fn eq(&self, other: &Self) -> bool {
         self.get() == other.get()
     }
 }
 
-impl ::std::cmp::PartialEq<bool> for AtomicFlag {
+impl ::std::cmp::PartialEq<bool> for AtomFlag {
     fn eq(&self, other: &bool) -> bool {
         &self.get() == other
     }
 }
 
-impl ::std::convert::From<bool> for AtomicFlag {
+impl ::std::convert::From<bool> for AtomFlag {
     fn from(value: bool) -> Self {
         Self::new(value)
     }
 }
 
-impl ::std::convert::Into<bool> for AtomicFlag {
+impl ::std::convert::Into<bool> for AtomFlag {
     fn into(self) -> bool {
         self.get()
     }

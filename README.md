@@ -47,9 +47,9 @@ async fn main() {
 
 ### Atomic State:
 ```rust
-use atomic_state::{ State, state };
+use atomic_state::prelude::*;
 
-static CONFIG: State<Config> = state!(
+static CONFIG: Lazy<AtomState<Config>> = lazy_state!(
     Config {
         count: 0,
     }
@@ -62,16 +62,34 @@ pub struct Config {
 
 #[tokio::main]
 async fn main() {
-    assert_eq!(CONFIG.get().count, 0);
-
     CONFIG.set(Config { count: 10, }).await;
-    assert_eq!(CONFIG.get().count, 10);
+    assert_eq!(CONFIG.get().await.count, 10);
 
-    (*CONFIG.lock().await).count = 20;
-    assert_eq!(CONFIG.get().count, 20);
+    (CONFIG.lock().await).count = 20;
+    assert_eq!(CONFIG.get().await.count, 20);
+}
+```
+#### With thread blocking:
+```rust
+use atomic_state::prelude::*;
 
-    CONFIG.map(|cfg| { cfg.count = 30; }).await;
-    assert_eq!(CONFIG.get().count, 30);
+static CONFIG: Lazy<AtomState<Config>> = lazy_state!(
+    Config {
+        count: 0,
+    }
+);
+
+#[derive(Debug, Clone)]
+pub struct Config {
+    pub count: i32,
+}
+
+fn main() {
+    CONFIG.block_set(Config { count: 10, });
+    assert_eq!(CONFIG.block_get().count, 10);
+
+    (CONFIG.block_lock()).count = 20;
+    assert_eq!(CONFIG.block_get().count, 20);
 }
 ```
 
