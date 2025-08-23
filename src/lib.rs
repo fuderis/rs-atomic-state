@@ -14,18 +14,18 @@ macro_rules! lazy {
     }}
 }
 
-/// Initializes a static 'AtomState' by 'once_cell::Lazy'
-#[macro_export]
-macro_rules! lazy_state {
-    ($e:expr) => {{
-        ::atomic_state::Lazy::new(|| AtomState::new($e))
-    }}
-}
-
 /// Initializes a static 'AtomFlag' by 'once_cell::Lazy'
 #[macro_export]
 macro_rules! lazy_flag {
     ($e:expr) => {{
         ::atomic_state::Lazy::new(|| AtomFlag::new($e))
+    }}
+}
+
+/// Initializes a static 'AtomState' by 'once_cell::Lazy'
+#[macro_export]
+macro_rules! lazy_state {
+    ($e:expr) => {{
+        ::atomic_state::Lazy::new(|| AtomState::new($e))
     }}
 }

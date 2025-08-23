@@ -20,7 +20,7 @@ impl<T> AtomState<T> {
         self.inner.write().await
     }
 
-    /// Returns a state locked guard
+    /// Returns a state locked guard (with thread blocking)
     pub fn block_lock(&self) -> RwLockWriteGuard<'_, T> {
         self.inner.blocking_write()
     }
