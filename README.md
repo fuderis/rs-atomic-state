@@ -16,10 +16,11 @@ This library bridges the gap between synchronous static variables and asynchrono
 ## Features:
 
 * Define static atomic flags to represent simple boolean states.
-* Create static asynchronous state wrappers around complex data structures.
-* Perform asynchronous write operations with automatic synchronization.
+* Create static state wrappers around complex data structures.
+* Perform write operations with automatic synchronization.
 * Access and modify shared state safely using async locks.
-* Use ergonomic APIs for mapping and updating internal state asynchronously.
+* Use ergonomic **API**s for mapping and updating internal state asynchronously.
+* Stores data inside **Arc** links to avoid unnecessary cloning
 
 It's ideal for applications that require global configuration, feature flags, or any kind of shared state accessible across asynchronous tasks without compromising thread safety or requiring complicated boilerplate code.
 
@@ -28,9 +29,9 @@ It's ideal for applications that require global configuration, feature flags, or
 
 ### Atomic Flag:
 ```rust
-use atomic_state::{ Flag, flag };
+use atomic_state::prelude::*;
 
-static IS_ACTIVE: Flag = flag!(false);
+static IS_ACTIVE: Lazy<AtomFlag> = lazy_flag!(false);
 
 #[tokio::main]
 async fn main() {
@@ -60,36 +61,15 @@ pub struct Config {
     pub count: i32,
 }
 
-#[tokio::main]
-async fn main() {
-    CONFIG.set(Config { count: 10, }).await;
-    assert_eq!(CONFIG.get().await.count, 10);
-
-    (CONFIG.lock().await).count = 20;
-    assert_eq!(CONFIG.get().await.count, 20);
-}
-```
-#### With thread blocking:
-```rust
-use atomic_state::prelude::*;
-
-static CONFIG: Lazy<AtomState<Config>> = lazy_state!(
-    Config {
-        count: 0,
-    }
-);
-
-#[derive(Debug, Clone)]
-pub struct Config {
-    pub count: i32,
-}
-
 fn main() {
-    CONFIG.block_set(Config { count: 10, });
-    assert_eq!(CONFIG.block_get().count, 10);
+    CONFIG.set(Config { count: 10, });
+    assert_eq!(CONFIG.get().count, 10);
 
-    (CONFIG.block_lock()).count = 20;
-    assert_eq!(CONFIG.block_get().count, 20);
+    CONFIG.map(|cfg| cfg.count = 20);
+    assert_eq!(CONFIG.get().count, 20);
+    
+    CONFIG.lock().count = 30;
+    assert_eq!(CONFIG.get().count, 30);
 }
 ```
 

@@ -2,9 +2,10 @@
 pub mod prelude;
 
 pub mod flag;    pub use flag::AtomFlag;
-pub mod state;   pub use state::AtomState;
+pub mod state;   pub use state::{ AtomState, AtomStateGuard };
 
 pub use once_cell::{ self, sync::Lazy };
+pub use arc_swap::{ self, ArcSwap };
 
 /// Initializes a static variable by 'once_cell::Lazy'
 #[macro_export]

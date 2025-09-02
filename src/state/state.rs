@@ -1,49 +1,51 @@
-use std::sync::{ Arc, };
-use tokio::sync::{ RwLock, RwLockReadGuard, RwLockWriteGuard };
+use crate::prelude::*;
+use super::*;
 
 /// The atomic state
 #[derive(Clone)]
-pub struct AtomState<T> {
-    inner: Arc<RwLock<T>>,
+pub struct AtomState<T: Clone> {
+    lock: Arc<RwLock<Arc<T>>>,
+    swap: Arc<ArcSwapAny<Arc<T>>>,
 }
 
-impl<T> AtomState<T> {
+impl<T: Clone> AtomState<T> {
     /// Creates a new state
     pub fn new(value: T) -> Self {
+        let arc_val = Arc::new(value);
+        
         Self {
-            inner: Arc::new(RwLock::new(value)),
+            lock: Arc::new(RwLock::new(arc_val.clone())),
+            swap: Arc::new(ArcSwapAny::from(arc_val)),
         }
     }
 
-    /// Returns a state locked guard
-    pub async fn lock(&self) -> RwLockWriteGuard<'_, T> {
-        self.inner.write().await
-    }
-
-    /// Returns a state locked guard (with thread blocking)
-    pub fn block_lock(&self) -> RwLockWriteGuard<'_, T> {
-        self.inner.blocking_write()
+    /// Returns a locked state guard
+    pub fn lock(&self) -> AtomStateGuard<'_, T> {
+        let data = (*self.get()).clone();
+        
+        AtomStateGuard {
+            lock: self.lock.write().expect(ERR_MSG),
+            swap: self.swap.clone(),
+            data,
+        }
     }
 
     /// Returns a state value
-    pub async fn get(&self) -> RwLockReadGuard<'_, T> {
-        self.inner.read().await
-    }
-
-    /// Returns a state value (with thread blocking)
-    pub fn block_get(&self) -> RwLockReadGuard<'_, T> {
-        self.inner.blocking_read()
+    pub fn get(&self) -> Arc<T> {
+        self.swap.load_full()
     }
 
     /// Sets a new value to state
-    pub async fn set(&self, value: T) {
-        let mut guard = self.inner.write().await;
-        *guard = value;
+    pub fn set(&self, value: T) {
+        *self.lock() = value;
     }
 
-    /// Sets a new value to state (with thread blocking)
-    pub fn block_set(&self, value: T) {
-        let mut guard = self.inner.blocking_write();
-        *guard = value;
+    /// Writes data directly
+    pub fn map(&self, f: impl FnOnce(&mut T)) {
+        let mut lock = self.lock();
+        let mut data = (*lock).clone();
+
+        f(&mut data);
+        *lock = data;
     }
 }
