@@ -4,8 +4,8 @@ use super::*;
 /// The atomic state
 #[derive(Clone)]
 pub struct AtomState<T: Clone> {
-    lock: Arc<RwLock<Arc<T>>>,
-    swap: Arc<ArcSwapAny<Arc<T>>>,
+    rw_lock: Arc<RwLock<Arc<T>>>,
+    arc_swap: Arc<ArcSwapAny<Arc<T>>>,
 }
 
 impl<T: Clone> AtomState<T> {
@@ -14,8 +14,8 @@ impl<T: Clone> AtomState<T> {
         let arc_val = Arc::new(value);
         
         Self {
-            lock: Arc::new(RwLock::new(arc_val.clone())),
-            swap: Arc::new(ArcSwapAny::from(arc_val)),
+            rw_lock: Arc::new(RwLock::new(arc_val.clone())),
+            arc_swap: Arc::new(ArcSwapAny::from(arc_val)),
         }
     }
 
@@ -24,15 +24,15 @@ impl<T: Clone> AtomState<T> {
         let data = (*self.get()).clone();
         
         AtomStateGuard {
-            lock: self.lock.write().expect(ERR_MSG),
-            swap: self.swap.clone(),
+            rw_lock: self.rw_lock.write().expect(ERR_MSG),
+            arc_swap: self.arc_swap.clone(),
             data,
         }
     }
 
     /// Returns a state value
     pub fn get(&self) -> Arc<T> {
-        self.swap.load_full()
+        self.arc_swap.load_full()
     }
 
     /// Sets a new value to state
@@ -42,10 +42,10 @@ impl<T: Clone> AtomState<T> {
 
     /// Writes data directly
     pub fn map(&self, f: impl FnOnce(&mut T)) {
-        let mut lock = self.lock();
-        let mut data = (*lock).clone();
+        let mut rw_lock = self.lock();
+        let mut data = (*rw_lock).clone();
 
         f(&mut data);
-        *lock = data;
+        *rw_lock = data;
     }
 }

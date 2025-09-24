@@ -2,8 +2,8 @@ use crate::prelude::*;
 
 /// The state mutex guard
 pub struct AtomStateGuard<'a, T: Clone> {
-    pub(super) lock: RwLockWriteGuard<'a, Arc<T>>,
-    pub(super) swap: Arc<ArcSwapAny<Arc<T>>>,
+    pub(super) rw_lock: RwLockWriteGuard<'a, Arc<T>>,
+    pub(super) arc_swap: Arc<ArcSwapAny<Arc<T>>>,
     pub(super) data: T,
 }
 
@@ -11,8 +11,8 @@ impl<'a, T: Clone> ::std::ops::Drop for AtomStateGuard<'a, T> {
     fn drop(self: &mut Self) {
         let data = Arc::new(self.data.clone());
         
-        *self.lock = data.clone();
-        self.swap.store(data);
+        *self.rw_lock = data.clone();
+        self.arc_swap.store(data);
     }
 }
 
