@@ -55,3 +55,9 @@ impl<T: Clone + Default> ::std::default::Default for State<T> {
         Self::new(Default::default())
     }
 }
+
+impl<T: Clone + Debugging> ::std::fmt::Debug for State<T> {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        write!(f, "{:?}", &self.get())
+    }
+}

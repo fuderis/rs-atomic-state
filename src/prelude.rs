@@ -3,6 +3,7 @@
 pub(crate) use std::sync::{ Arc, };
 pub(crate) use std::sync::{ RwLock, RwLockReadGuard, RwLockWriteGuard };
 pub(crate) use std::sync::atomic::{ AtomicBool, Ordering, };
+pub(crate) use std::fmt::Debug as Debugging;
 pub(crate) use tokio::sync::{ Notify };
 
 pub use once_cell::{ self, sync::Lazy };
@@ -10,5 +11,5 @@ pub use arc_swap::{ ArcSwapAny };
 
 pub use crate::{
     Flag, State, StateGuard,
-    state, flag, lazy, lazy_flag, lazy_state,
+    lazy, lazy_flag, lazy_state,
 };

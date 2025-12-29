@@ -11,7 +11,7 @@ pub use arc_swap::{ self, ArcSwap };
 #[macro_export]
 macro_rules! lazy {
     ($e:expr) => {{
-        ::atomic_state::Lazy::new(|| $e)
+        ::atomic_state::Lazy::new(|| { $e })
     }}
 }
 
@@ -19,7 +19,7 @@ macro_rules! lazy {
 #[macro_export]
 macro_rules! lazy_flag {
     ($e:expr) => {{
-        ::atomic_state::Lazy::new(|| Flag::new($e))
+        ::atomic_state::Lazy::new(|| ::atomic_state::Flag::new($e))
     }}
 }
 
@@ -27,6 +27,6 @@ macro_rules! lazy_flag {
 #[macro_export]
 macro_rules! lazy_state {
     ($e:expr) => {{
-        ::atomic_state::Lazy::new(|| State::new($e))
+        ::atomic_state::Lazy::new(|| ::atomic_state::State::new($e))
     }}
 }
