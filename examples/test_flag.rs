@@ -1,6 +1,6 @@
 use atomic_state::prelude::*;
 
-static IS_ACTIVE: Lazy<AtomFlag> = lazy_flag!(false);
+static IS_ACTIVE: Lazy<Flag> = lazy_flag!(false);
 
 #[tokio::main]
 async fn main() {

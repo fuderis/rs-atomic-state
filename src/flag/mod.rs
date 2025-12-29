@@ -1,1 +1,1 @@
-pub mod flag;  pub use flag::AtomFlag;
+pub mod flag;  pub use flag::Flag;

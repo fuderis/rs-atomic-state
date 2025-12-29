@@ -31,7 +31,7 @@ It's ideal for applications that require global configuration, feature flags, or
 ```rust
 use atomic_state::prelude::*;
 
-static IS_ACTIVE: Lazy<AtomFlag> = lazy_flag!(false);
+static IS_ACTIVE: Lazy<Flag> = lazy_flag!(false);
 
 #[tokio::main]
 async fn main() {
@@ -50,7 +50,7 @@ async fn main() {
 ```rust
 use atomic_state::prelude::*;
 
-static CONFIG: Lazy<AtomState<Config>> = lazy_state!(
+static CONFIG: Lazy<State<Config>> = lazy_state!(
     Config {
         count: 0,
     }

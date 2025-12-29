@@ -1,8 +1,8 @@
 #![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/README.md"))]
 pub mod prelude;
 
-pub mod flag;    pub use flag::AtomFlag;
-pub mod state;   pub use state::{ AtomState, AtomStateGuard };
+pub mod flag;    pub use flag::Flag;
+pub mod state;   pub use state::{ State, StateGuard };
 
 pub use once_cell::{ self, sync::Lazy };
 pub use arc_swap::{ self, ArcSwap };
@@ -15,18 +15,18 @@ macro_rules! lazy {
     }}
 }
 
-/// Initializes a static 'AtomFlag' by 'once_cell::Lazy'
+/// Initializes a static 'Flag' by 'once_cell::Lazy'
 #[macro_export]
 macro_rules! lazy_flag {
     ($e:expr) => {{
-        ::atomic_state::Lazy::new(|| AtomFlag::new($e))
+        ::atomic_state::Lazy::new(|| Flag::new($e))
     }}
 }
 
-/// Initializes a static 'AtomState' by 'once_cell::Lazy'
+/// Initializes a static 'State' by 'once_cell::Lazy'
 #[macro_export]
 macro_rules! lazy_state {
     ($e:expr) => {{
-        ::atomic_state::Lazy::new(|| AtomState::new($e))
+        ::atomic_state::Lazy::new(|| State::new($e))
     }}
 }

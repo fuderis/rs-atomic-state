@@ -9,6 +9,6 @@ pub use once_cell::{ self, sync::Lazy };
 pub use arc_swap::{ ArcSwapAny };
 
 pub use crate::{
-    AtomFlag, AtomState, AtomStateGuard,
+    Flag, State, StateGuard,
     state, flag, lazy, lazy_flag, lazy_state,
 };

@@ -3,12 +3,12 @@ use super::*;
 
 /// The atomic state
 #[derive(Clone)]
-pub struct AtomState<T: Clone> {
+pub struct State<T: Clone> {
     rw_lock: Arc<RwLock<Arc<T>>>,
     arc_swap: Arc<ArcSwapAny<Arc<T>>>,
 }
 
-impl<T: Clone> AtomState<T> {
+impl<T: Clone> State<T> {
     /// Creates a new state
     pub fn new(value: T) -> Self {
         let arc_val = Arc::new(value);
@@ -20,10 +20,10 @@ impl<T: Clone> AtomState<T> {
     }
 
     /// Returns a locked state guard
-    pub fn lock(&self) -> AtomStateGuard<'_, T> {
+    pub fn lock(&self) -> StateGuard<'_, T> {
         let data = (*self.get()).clone();
         
-        AtomStateGuard {
+        StateGuard {
             rw_lock: self.rw_lock.write().expect(ERR_MSG),
             arc_swap: self.arc_swap.clone(),
             data,
@@ -47,5 +47,11 @@ impl<T: Clone> AtomState<T> {
 
         f(&mut data);
         *rw_lock = data;
+    }
+}
+
+impl<T: Clone + Default> ::std::default::Default for State<T> {
+    fn default() -> Self {
+        Self::new(Default::default())
     }
 }

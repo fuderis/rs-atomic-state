@@ -1,6 +1,6 @@
 use atomic_state::prelude::*;
 
-static CONFIG: Lazy<AtomState<Config>> = lazy_state!(
+static CONFIG: Lazy<State<Config>> = lazy_state!(
     Config {
         count: 0,
     }
