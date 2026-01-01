@@ -3,7 +3,7 @@ name = "atomic-state"
 description = "This library provides a static asynchronous data that can be accessed safely and concurrently from any part of your program"
 keywords = ["async", "static", "flag", "state"]
 categories = ["development-tools", "rust-patterns"]
-version = "0.1.4"
+version = "0.1.5"
 license = "MIT"
 authors = ["Bulat Sh. <t.me/fuderis>"]
 repository = "https://github.com/fuderis/rs-atomic-state"
@@ -11,6 +11,6 @@ readme = "README.md"
 edition = "2024"
 
 [dependencies]
-arc-swap = "1.7.1"
+arc-swap = "1.8.0"
 once_cell = "1.21.3"
-tokio = { version = "1.47.1", features = ["full"] }
+tokio = { version = "1.48.0", features = ["full"] }

@@ -21,10 +21,11 @@ impl<T: Clone> State<T> {
 
     /// Returns a locked state guard
     pub fn lock(&self) -> StateGuard<'_, T> {
-        let data = (*self.get()).clone();
+        let rw_lock = self.rw_lock.write().expect(ERR_MSG);
+        let data = (**rw_lock).clone();
         
         StateGuard {
-            rw_lock: self.rw_lock.write().expect(ERR_MSG),
+            rw_lock,
             arc_swap: self.arc_swap.clone(),
             data,
         }
@@ -33,6 +34,11 @@ impl<T: Clone> State<T> {
     /// Returns a state value
     pub fn get(&self) -> Arc<T> {
         self.arc_swap.load_full()
+    }
+
+    /// Returns a clone of state value
+    pub fn get_cloned(&self) -> T {
+        self.arc_swap.load_full().as_ref().clone()
     }
 
     /// Sets a new value to state
